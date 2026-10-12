@@ -12,7 +12,15 @@ export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURICo
 export const FORM_ENDPOINT =
   process.env.NEXT_PUBLIC_FORM_ENDPOINT?.trim() ?? "";
 
-export const VIMEO_URL = process.env.NEXT_PUBLIC_VIMEO_URL?.trim() ?? "";
+const DEFAULT_VIMEO_URL =
+  "https://vimeo.com/149171749?fl=pl&fe=cm#t=1m4s";
+
+const configuredVimeoUrl = process.env.NEXT_PUBLIC_VIMEO_URL;
+
+export const VIMEO_URL =
+  configuredVimeoUrl === undefined
+    ? DEFAULT_VIMEO_URL
+    : configuredVimeoUrl.trim();
 
 export function getSiteUrl(): URL {
   const configuredUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -58,6 +66,16 @@ export function getVimeoEmbedUrl(value: string): string | null {
 
     if (hash) {
       embedUrl.searchParams.set("h", hash);
+    }
+
+    if (url.hash) {
+      const startTime = url.hash.match(
+        /^#t=(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/,
+      );
+
+      if (startTime?.slice(1).some(Boolean)) {
+        embedUrl.hash = url.hash;
+      }
     }
 
     return embedUrl.toString();

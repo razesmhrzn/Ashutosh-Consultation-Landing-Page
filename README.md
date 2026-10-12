@@ -22,7 +22,7 @@ On macOS or Linux, use `cp .env.example .env.local` instead of `copy`.
 | --- | --- | --- |
 | `NEXT_PUBLIC_SITE_URL` | Production | The public site origin, for example `https://example.com`. Used for canonical and Open Graph URLs. |
 | `NEXT_PUBLIC_FORM_ENDPOINT` | No | A URL that accepts the form fields as a JSON `POST`. |
-| `NEXT_PUBLIC_VIMEO_URL` | No | A Vimeo share link in `https://vimeo.com/ID` or `https://vimeo.com/ID/HASH` format. |
+| `NEXT_PUBLIC_VIMEO_URL` | No | A Vimeo share link in `https://vimeo.com/ID` or `https://vimeo.com/ID/HASH` format. It may include a `#t=` start time. |
 
 > **Important:** leads are **not saved** when `NEXT_PUBLIC_FORM_ENDPOINT` is empty. In that mode the form waits briefly, simulates success, and redirects to `/thank-you`. Connect a real endpoint such as Formspree, Google Apps Script, or your own API before running ads.
 
@@ -41,7 +41,7 @@ The configured form endpoint receives this JSON shape:
 
 Your endpoint must return a `2xx` response for the submission to be treated as successful. If it lives on another origin, it must also allow this site through CORS.
 
-When no Vimeo URL is configured, the thank-you page simply omits the video. It never inserts a placeholder or fake video.
+The supplied Vimeo video is used by default. Set `NEXT_PUBLIC_VIMEO_URL` to another valid Vimeo link to replace it, or explicitly set it to an empty value to omit the video.
 
 ## Production build
 
