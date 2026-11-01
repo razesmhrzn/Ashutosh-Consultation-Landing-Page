@@ -49,11 +49,11 @@ export default function Hero() {
         </p>
 
         <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-muted sm:text-lg sm:leading-8">
-          Sourcing tissue, chemicals, cleaning machinery, and other facility
-          essentials from several places can make purchasing harder than it
-          needs to be. You can review suitable options at your own pace,
-          compare quality and pricing privately, and decide what works best
-          for your business.
+          Sourcing Paper goods, Cleaning supplies, Housekeeping machinery, and
+          Core facility essentials from multiple vendors creates unnecessary
+          hassle. Evaluate products at your own pace, compare competitive
+          pricing side-by-side, and select the right solutions for your
+          operations—all in one place.
         </p>
 
         <p className="mt-6 rounded-full border border-primary/15 bg-white/80 px-5 py-3 text-sm font-semibold leading-6 text-deep-green shadow-sm sm:text-base">
