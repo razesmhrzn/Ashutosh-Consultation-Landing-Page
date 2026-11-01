@@ -2,7 +2,7 @@ const benefits = [
   "See how many suppliers you can cut down to one",
   "See your supplier list and spending in one place",
   "Get one quote, one bill, and one WhatsApp contact",
-  "Compare branded and generic options for your items",
+  "Branded and generic options as per your requirement",
   "Get free delivery and 5% off everything",
 ];
 

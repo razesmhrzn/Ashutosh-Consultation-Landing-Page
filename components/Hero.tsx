@@ -49,9 +49,11 @@ export default function Hero() {
         </p>
 
         <p className="mt-5 max-w-2xl text-pretty text-base leading-7 text-muted sm:text-lg sm:leading-8">
-          Tissue from one shop. Chemicals from another. Machines from a third.
-          Share your current suppliers and what you spend. We show you how to
-          bring it all to one supplier.
+          Sourcing tissue, chemicals, cleaning machinery, and other facility
+          essentials from several places can make purchasing harder than it
+          needs to be. You can review suitable options at your own pace,
+          compare quality and pricing privately, and decide what works best
+          for your business.
         </p>
 
         <p className="mt-6 rounded-full border border-primary/15 bg-white/80 px-5 py-3 text-sm font-semibold leading-6 text-deep-green shadow-sm sm:text-base">
