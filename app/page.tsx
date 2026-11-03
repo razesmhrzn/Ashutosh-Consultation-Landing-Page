@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      <main className="-mt-[50px]">
+      <main className="-mt-[15px]">
         <Hero />
         <Problem />
         <Benefits />
