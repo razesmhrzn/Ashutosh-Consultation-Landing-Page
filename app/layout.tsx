@@ -10,17 +10,17 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 const description =
-  "A free one-to-one supplier check for hotel housekeepers in Kathmandu from Ashutosh Trade.";
+  "Download a free 30-point facility supplies and cleaning operations audit for hospitals, schools, hotels, commercial buildings, and offices.";
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
-  title: "One Supplier for Hotel Housekeeping | Ashutosh Trade",
+  title: "Free Facility Supplies Audit Toolkit | Ashutosh Trade",
   description,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: "One Supplier for Hotel Housekeeping | Ashutosh Trade",
+    title: "Free Facility Supplies Audit Toolkit | Ashutosh Trade",
     description,
     url: "/",
     siteName: "Ashutosh Trade",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "One Supplier for Hotel Housekeeping | Ashutosh Trade",
+    title: "Free Facility Supplies Audit Toolkit | Ashutosh Trade",
     description,
     images: ["/logo.png"],
   },

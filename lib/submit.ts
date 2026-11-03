@@ -1,26 +1,12 @@
-import { FORM_ENDPOINT } from "@/lib/config";
+import type { LeadFormData } from "@/lib/lead";
 
-export type LeadFormData = {
-  fullName: string;
-  email: string;
-  whatsapp: string;
-  businessName: string;
-  website: string;
-  message: string;
-};
-
-const SIMULATED_DELAY_MS = 700;
+export type { LeadFormData } from "@/lib/lead";
 
 export async function submitLead(data: LeadFormData): Promise<void> {
-  if (!FORM_ENDPOINT) {
-    await new Promise((resolve) => setTimeout(resolve, SIMULATED_DELAY_MS));
-    return;
-  }
-
   let response: Response;
 
   try {
-    response = await fetch(FORM_ENDPOINT, {
+    response = await fetch("/api/lead-magnet", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -34,8 +20,12 @@ export async function submitLead(data: LeadFormData): Promise<void> {
   }
 
   if (!response.ok) {
+    const result = (await response.json().catch(() => null)) as
+      | { error?: string }
+      | null;
     throw new Error(
-      "We couldn’t send your request right now. Please try again in a moment.",
+      result?.error ||
+        "We couldn’t email the toolkit right now. Please try again in a moment.",
     );
   }
 }

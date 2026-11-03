@@ -1,16 +1,16 @@
 const steps = [
   {
-    title: "Share your list",
-    description: "Tell us your product list and monthly spend.",
+    title: "Request the toolkit",
+    description: "Share a few contact details so we can email the PDF to you.",
   },
   {
-    title: "We go through it with you",
-    description: "A 1-on-1 call to discuss the products you require.",
+    title: "Complete the audit",
+    description: "Set aside 15 minutes with the people who order and use your supplies.",
   },
   {
-    title: "Get your plan",
+    title: "Act on three gaps",
     description:
-      "A plan to move to one supplier. Start with a small trial order.",
+      "Use the included 30-day plan to assign owners, deadlines, and measurable outcomes.",
   },
 ];
 
@@ -25,7 +25,7 @@ export default function Process() {
           id="process-heading"
           className="text-center text-3xl font-bold tracking-[-0.035em] text-ink sm:text-4xl"
         >
-          How it works
+          From download to action
         </h2>
 
         <ol className="mt-10 grid gap-5 md:grid-cols-3 md:gap-6">

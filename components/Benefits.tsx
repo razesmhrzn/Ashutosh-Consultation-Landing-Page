@@ -1,9 +1,9 @@
 const benefits = [
-  "See how many suppliers you can cut down to one",
-  "See your supplier list and spending in one place",
-  "Get one quote, one bill, and one WhatsApp contact",
-  "Branded and generic options as per your requirement",
-  "Get free delivery and 5% off everything",
+  "A 30-point YES/NO audit across procurement, inventory, product control, machinery, and training",
+  "A scoring guide that shows whether your operation is controlled, improving, or at high leakage risk",
+  "A reorder-point worksheet for your ten most important consumables",
+  "A weighted supplier comparison scorecard that goes beyond unit price",
+  "A printable 30-day improvement plan with owners, deadlines, and success measures",
 ];
 
 function CheckIcon() {
@@ -36,7 +36,7 @@ export default function Benefits() {
           id="benefits-heading"
           className="max-w-md text-balance text-3xl font-bold leading-tight tracking-[-0.035em] text-ink sm:text-4xl"
         >
-          What you get from the free check
+          What&apos;s inside the free toolkit
         </h2>
 
         <ul

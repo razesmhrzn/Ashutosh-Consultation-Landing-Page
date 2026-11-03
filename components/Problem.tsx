@@ -1,8 +1,8 @@
 const problems = [
-  "Many suppliers. Many delivery times. Many bills.",
-  "Deliveries that come late or short when stock is low.",
-  "Prices and quality that change without warning.",
-  "No clear picture of what you really spend.",
+  "Too many suppliers, quotations, delivery times, and invoices.",
+  "Stockouts, rushed purchases, or excess stock tying up cash.",
+  "Product quality, pack sizes, and prices that are hard to compare.",
+  "Cleaning machinery that is underused, overdue for service, or unavailable when needed.",
 ];
 
 export default function Problem() {
@@ -22,10 +22,10 @@ export default function Problem() {
               id="problem-heading"
               className="text-balance text-3xl font-bold leading-tight tracking-[-0.03em] sm:text-4xl"
             >
-              Does this sound like your week?
+              Which gaps are quietly costing your facility?
             </h2>
             <p className="mt-5 text-lg font-semibold text-[#BFE0D1]">
-              There is an easier way.
+              You cannot improve what you have not made visible.
             </p>
           </div>
 

@@ -1,58 +1,65 @@
 "use client";
 
-import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useEffect, useState } from "react";
 import { CTA_TEXT } from "@/lib/config";
-import { LeadFormData, submitLead } from "@/lib/submit";
+import {
+  FACILITY_CHALLENGES,
+  FACILITY_TYPES,
+  type LeadFormData,
+} from "@/lib/lead";
 
-type FieldName = keyof LeadFormData;
+const FLODESK_FORM_ID = "6ae9e8069e9d389e0d93fa2b";
+const FLODESK_FORM_CLASS = `ff-${FLODESK_FORM_ID}`;
+const FLODESK_FORM_ACTION = `https://form.flodesk.com/forms/${FLODESK_FORM_ID}/submit`;
+const FLODESK_CONFIG =
+  "eyJ0cmlnZ2VyIjp7Im1vZGUiOiJpbW1lZGlhdGVseSIsInZhbHVlIjowfSwib25TdWNjZXNzIjp7Im1vZGUiOiJyZWRpcmVjdCIsIm1lc3NhZ2UiOiIiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vYnV5LmFzaHV0b3NodHJhZGUuY29tLm5wL3RoYW5rLXlvdSJ9LCJjb2kiOnRydWUsInNob3dGb3JSZXR1cm5WaXNpdG9ycyI6dHJ1ZSwibm90aWZpY2F0aW9uIjp0cnVlLCJnZHByIjp7ImFjY2VwdHNNYXJrZXRpbmciOmZhbHNlLCJwcml2YWN5UG9saWN5Ijp7ImVuYWJsZWQiOmZhbHNlLCJtYW5kYXRvcnkiOmZhbHNlfX0sInRyYWNraW5nQ29uZmlnIjp7Im1ldGFQaXhlbElkIjoiIiwiY29va2llQmFubmVyRW5hYmxlZCI6ZmFsc2UsImdvb2dsZUFuYWx5dGljc0lkIjoiIn19";
+
+declare global {
+  interface Window {
+    FlodeskObject?: string;
+    fd?: ((
+      command: "form:handle",
+      options: { formId: string; rootEl: string },
+    ) => void) & { q?: unknown[][] };
+  }
+}
+
+type FieldName = Exclude<keyof LeadFormData, "companyWebsite">;
 type FieldErrors = Partial<Record<FieldName, string>>;
 
 const fieldOrder: FieldName[] = [
   "fullName",
   "email",
+  "organization",
+  "facilityType",
   "whatsapp",
-  "businessName",
-  "website",
-  "message",
+  "challenge",
+  "contactConsent",
 ];
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const whatsappPattern = /^\+?\d{7,15}$/;
-
-function isValidWebUrl(value: string) {
-  try {
-    const url = new URL(value);
-    return url.protocol === "http:" || url.protocol === "https:";
-  } catch {
-    return false;
-  }
-}
+const whatsappPattern = /^\+?[0-9 ()-]{7,22}$/;
 
 function validate(data: LeadFormData): FieldErrors {
   const errors: FieldErrors = {};
 
   if (!data.fullName) errors.fullName = "Please enter your full name.";
-
   if (!data.email) {
-    errors.email = "Please enter your active email.";
+    errors.email = "Please enter your work email.";
   } else if (!emailPattern.test(data.email)) {
     errors.email = "Please enter a valid email address.";
   }
-
-  if (!data.whatsapp) {
-    errors.whatsapp = "Please enter your WhatsApp number.";
-  } else if (!whatsappPattern.test(data.whatsapp)) {
-    errors.whatsapp =
-      "Use 7 to 15 digits, with an optional + at the beginning.";
+  if (!data.organization) {
+    errors.organization = "Please enter your organization.";
   }
-
-  if (!data.businessName) {
-    errors.businessName = "Please enter your business name.";
+  if (!data.facilityType) {
+    errors.facilityType = "Please select your facility type.";
   }
-
-  if (data.website && !isValidWebUrl(data.website)) {
-    errors.website = "Please enter a full URL beginning with http:// or https://.";
+  if (data.whatsapp && !whatsappPattern.test(data.whatsapp)) {
+    errors.whatsapp = "Enter a valid number or leave it blank.";
+  }
+  if (!data.contactConsent) {
+    errors.contactConsent = "Please confirm we may email your requested guide.";
   }
 
   return errors;
@@ -72,225 +79,228 @@ const inputClasses =
   "mt-2 min-h-14 w-full rounded-2xl border border-deep-green/20 bg-white px-4 py-3 text-base text-ink outline-none transition placeholder:text-muted/65 hover:border-primary/45 focus:border-primary focus:ring-4 focus:ring-primary/15 aria-[invalid=true]:border-red-600 aria-[invalid=true]:focus:ring-red-600/10";
 
 export default function CTAForm() {
-  const router = useRouter();
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [submitError, setSubmitError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!window.fd) {
+      const queuedFlodesk = ((...args: unknown[]) => {
+        queuedFlodesk.q = queuedFlodesk.q || [];
+        queuedFlodesk.q.push(args);
+      }) as NonNullable<Window["fd"]>;
+      const cacheVersion = Math.floor(Date.now() / (120 * 1000)) * 60;
+      const moduleScript = document.createElement("script");
+      const legacyScript = document.createElement("script");
+
+      window.FlodeskObject = "fd";
+      window.fd = queuedFlodesk;
+
+      moduleScript.async = true;
+      moduleScript.type = "module";
+      moduleScript.src = `https://assets.flodesk.com/universal.mjs?v=${cacheVersion}`;
+      legacyScript.async = true;
+      legacyScript.noModule = true;
+      legacyScript.src = `https://assets.flodesk.com/universal.js?v=${cacheVersion}`;
+      document.head.append(moduleScript, legacyScript);
+    }
+
+    window.fd?.("form:handle", {
+      formId: FLODESK_FORM_ID,
+      rootEl: `.${FLODESK_FORM_CLASS}`,
+    });
+  }, []);
 
   const clearFieldError = (field: FieldName) => {
     if (!errors[field]) return;
     setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    if (isSubmitting) return;
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    if (isSubmitting) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
 
     const form = new FormData(event.currentTarget);
     const data: LeadFormData = {
       fullName: String(form.get("fullName") ?? "").trim(),
       email: String(form.get("email") ?? "").trim(),
       whatsapp: String(form.get("whatsapp") ?? "").trim(),
-      businessName: String(form.get("businessName") ?? "").trim(),
-      website: String(form.get("website") ?? "").trim(),
-      message: String(form.get("message") ?? "").trim(),
+      organization: String(form.get("organization") ?? "").trim(),
+      facilityType: String(form.get("facilityType") ?? "").trim() as LeadFormData["facilityType"],
+      challenge: String(form.get("challenge") ?? "").trim() as LeadFormData["challenge"],
+      contactConsent: form.get("contactConsent") === "on",
+      companyWebsite: String(form.get("companyWebsite") ?? "").trim(),
     };
     const nextErrors = validate(data);
     const firstInvalidField = fieldOrder.find((field) => nextErrors[field]);
 
     setErrors(nextErrors);
-    setSubmitError("");
 
     if (firstInvalidField) {
+      event.preventDefault();
+      event.stopPropagation();
       requestAnimationFrame(() => {
         document.getElementById(firstInvalidField)?.focus();
       });
       return;
     }
 
-    setIsSubmitting(true);
+    const nameParts = data.fullName.split(/\s+/).filter(Boolean);
+    const firstName = nameParts.shift() ?? data.fullName;
+    const lastName = nameParts.join(" ");
+    const flodeskValues = {
+      firstName,
+      lastName,
+      whatsapp: data.whatsapp || "Not provided",
+      organization: data.organization,
+      website: [data.facilityType, data.challenge].filter(Boolean).join(" | "),
+    };
 
-    try {
-      await submitLead(data);
-      router.push("/thank-you");
-    } catch (error) {
-      setSubmitError(
-        error instanceof Error
-          ? error.message
-          : "We couldn’t send your request. Please try again.",
+    Object.entries(flodeskValues).forEach(([field, value]) => {
+      const input = event.currentTarget.querySelector<HTMLInputElement>(
+        `[data-flodesk-field="${field}"]`,
       );
-      setIsSubmitting(false);
-    }
+
+      if (input) input.value = value;
+    });
+
+    setIsSubmitting(true);
   };
 
   return (
     <section
-      id="book"
+      id="get-toolkit"
       aria-labelledby="form-heading"
-      className="scroll-mt-6 px-5 py-16 sm:px-8 sm:py-24"
+      className={`${FLODESK_FORM_CLASS} scroll-mt-6 px-5 py-16 sm:px-8 sm:py-24`}
+      data-ff-el="root"
+      data-ff-version="3"
+      data-ff-type="inline"
+      data-ff-name="inlineNoImage"
+      data-ff-stage="default"
     >
-      <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[2rem] border border-deep-green/10 bg-white shadow-panel sm:rounded-[2.5rem] lg:grid-cols-[0.8fr_1.2fr]">
-        <div className="bg-deep-green px-6 py-10 text-white sm:px-10 sm:py-12 lg:px-12 lg:py-14">
-          <h2
-            id="form-heading"
-            className="text-4xl font-bold tracking-[-0.035em] sm:text-5xl"
-          >
-            Book the call
-          </h2>
-          <p className="mt-5 max-w-sm text-base leading-7 text-white/80 sm:text-lg">
-            One-to-one consultation. A customized strategy for your business.
-          </p>
+      <div data-ff-el="config" data-ff-config={FLODESK_CONFIG} hidden />
+      <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[2rem] border border-deep-green/10 bg-white shadow-panel sm:rounded-[2.5rem] lg:grid-cols-[0.82fr_1.18fr]">
+        <div className="relative overflow-hidden bg-deep-green px-6 py-10 text-white sm:px-10 sm:py-12 lg:px-12 lg:py-14">
+          <div
+            aria-hidden="true"
+            className="absolute -right-16 -top-16 h-56 w-56 rounded-full border-[38px] border-white/[0.045]"
+          />
+          <div className="relative">
+            <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-[#A7D8C2]">
+              Free PDF toolkit
+            </p>
+            <h2
+              id="form-heading"
+              className="mt-4 text-balance text-4xl font-bold tracking-[-0.04em] sm:text-5xl"
+            >
+              Get the 30-point facility audit
+            </h2>
+            <p className="mt-5 max-w-sm text-base leading-7 text-white/80 sm:text-lg">
+              We&apos;ll email the complete checklist, reorder planner, supplier scorecard, and 30-day action plan.
+            </p>
+            <ul className="mt-8 space-y-4 text-sm leading-6 text-white/90" role="list">
+              <li className="flex gap-3"><span aria-hidden="true" className="text-[#A7D8C2]">✓</span> Built for hospitals, schools, hotels, offices, and commercial buildings</li>
+              <li className="flex gap-3"><span aria-hidden="true" className="text-[#A7D8C2]">✓</span> Printable and easy to complete with your team</li>
+              <li className="flex gap-3"><span aria-hidden="true" className="text-[#A7D8C2]">✓</span> No newsletter subscription required</li>
+            </ul>
+          </div>
         </div>
 
         <form
           noValidate
-          onSubmit={handleSubmit}
+          action={FLODESK_FORM_ACTION}
+          method="post"
+          data-ff-el="form"
+          onSubmitCapture={handleSubmit}
           className="min-w-0 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12"
         >
-          <div className="grid gap-6 sm:grid-cols-2">
+          <div data-ff-el="content">
+            <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+              <input name="firstName" type="hidden" data-flodesk-field="firstName" required />
+              <input name="lastName" type="hidden" data-flodesk-field="lastName" />
+              <input id={`ff-${FLODESK_FORM_ID}-d2B9oAeIe4`} name="fields." type="hidden" data-flodesk-field="whatsapp" />
+              <input id={`ff-${FLODESK_FORM_ID}-vC7XLmjEi0`} name="fields." type="hidden" data-flodesk-field="organization" required />
+              <input id={`ff-${FLODESK_FORM_ID}-i0tMxyJaGD`} name="fields." type="hidden" data-flodesk-field="website" required />
+              <input name="confirm_email_address" type="text" tabIndex={-1} autoComplete="off" />
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
             <div>
               <label htmlFor="fullName" className="text-sm font-bold text-ink">
-                Full Name <span aria-hidden="true">*</span>
+                Full name <span aria-hidden="true">*</span>
               </label>
-              <input
-                id="fullName"
-                name="fullName"
-                type="text"
-                autoComplete="name"
-                required
-                placeholder="Your full name"
-                aria-invalid={Boolean(errors.fullName)}
-                aria-describedby={errors.fullName ? "fullName-error" : undefined}
-                onChange={() => clearFieldError("fullName")}
-                className={inputClasses}
-              />
+              <input id="fullName" name="fullName" type="text" autoComplete="name" required placeholder="Your full name" aria-invalid={Boolean(errors.fullName)} aria-describedby={errors.fullName ? "fullName-error" : undefined} onChange={() => clearFieldError("fullName")} className={inputClasses} />
               <ErrorMessage id="fullName-error">{errors.fullName}</ErrorMessage>
             </div>
 
             <div>
               <label htmlFor="email" className="text-sm font-bold text-ink">
-                Active Email <span aria-hidden="true">*</span>
+                Work email <span aria-hidden="true">*</span>
               </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                required
-                placeholder="you@business.com"
-                aria-invalid={Boolean(errors.email)}
-                aria-describedby={errors.email ? "email-error" : undefined}
-                onChange={() => clearFieldError("email")}
-                className={inputClasses}
-              />
+              <input id="email" name="email" type="email" inputMode="email" autoComplete="email" required placeholder="you@organization.com" aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "email-error" : undefined} onChange={() => clearFieldError("email")} className={inputClasses} />
               <ErrorMessage id="email-error">{errors.email}</ErrorMessage>
             </div>
 
             <div>
-              <label htmlFor="whatsapp" className="text-sm font-bold text-ink">
-                WhatsApp Number <span aria-hidden="true">*</span>
+              <label htmlFor="organization" className="text-sm font-bold text-ink">
+                Organization <span aria-hidden="true">*</span>
               </label>
-              <input
-                id="whatsapp"
-                name="whatsapp"
-                type="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                required
-                placeholder="+9779812345678"
-                aria-invalid={Boolean(errors.whatsapp)}
-                aria-describedby={
-                  errors.whatsapp ? "whatsapp-error" : undefined
-                }
-                onChange={() => clearFieldError("whatsapp")}
-                className={inputClasses}
-              />
+              <input id="organization" name="organization" type="text" autoComplete="organization" required placeholder="Facility or company name" aria-invalid={Boolean(errors.organization)} aria-describedby={errors.organization ? "organization-error" : undefined} onChange={() => clearFieldError("organization")} className={inputClasses} />
+              <ErrorMessage id="organization-error">{errors.organization}</ErrorMessage>
+            </div>
+
+            <div>
+              <label htmlFor="facilityType" className="text-sm font-bold text-ink">
+                Facility type <span aria-hidden="true">*</span>
+              </label>
+              <select id="facilityType" name="facilityType" required defaultValue="" aria-invalid={Boolean(errors.facilityType)} aria-describedby={errors.facilityType ? "facilityType-error" : undefined} onChange={() => clearFieldError("facilityType")} className={inputClasses}>
+                <option value="" disabled>Select one</option>
+                {FACILITY_TYPES.map((facilityType) => <option key={facilityType} value={facilityType}>{facilityType}</option>)}
+              </select>
+              <ErrorMessage id="facilityType-error">{errors.facilityType}</ErrorMessage>
+            </div>
+
+            <div>
+              <label htmlFor="whatsapp" className="text-sm font-bold text-ink">
+                WhatsApp <span className="ml-1 font-normal text-muted">(optional)</span>
+              </label>
+              <input id="whatsapp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" placeholder="+977 98XXXXXXXX" aria-invalid={Boolean(errors.whatsapp)} aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined} onChange={() => clearFieldError("whatsapp")} className={inputClasses} />
               <ErrorMessage id="whatsapp-error">{errors.whatsapp}</ErrorMessage>
             </div>
 
             <div>
-              <label
-                htmlFor="businessName"
-                className="text-sm font-bold text-ink"
-              >
-                Business Name <span aria-hidden="true">*</span>
+              <label htmlFor="challenge" className="text-sm font-bold text-ink">
+                Biggest challenge <span className="ml-1 font-normal text-muted">(optional)</span>
               </label>
-              <input
-                id="businessName"
-                name="businessName"
-                type="text"
-                autoComplete="organization"
-                required
-                placeholder="Your hotel or business"
-                aria-invalid={Boolean(errors.businessName)}
-                aria-describedby={
-                  errors.businessName ? "businessName-error" : undefined
-                }
-                onChange={() => clearFieldError("businessName")}
-                className={inputClasses}
-              />
-              <ErrorMessage id="businessName-error">
-                {errors.businessName}
-              </ErrorMessage>
+              <select id="challenge" name="challenge" defaultValue="" className={inputClasses}>
+                <option value="">Select one</option>
+                {FACILITY_CHALLENGES.map((challenge) => <option key={challenge} value={challenge}>{challenge}</option>)}
+              </select>
             </div>
-          </div>
+            </div>
 
-          <div className="mt-6">
-            <label htmlFor="website" className="text-sm font-bold text-ink">
-              Website or Facebook URL
-              <span className="ml-1 font-normal text-muted">(optional)</span>
-            </label>
-            <input
-              id="website"
-              name="website"
-              type="url"
-              inputMode="url"
-              autoComplete="url"
-              placeholder="https://"
-              aria-invalid={Boolean(errors.website)}
-              aria-describedby={errors.website ? "website-error" : undefined}
-              onChange={() => clearFieldError("website")}
-              className={inputClasses}
-            />
-            <ErrorMessage id="website-error">{errors.website}</ErrorMessage>
-          </div>
+            <div className="mt-6">
+              <label className="flex cursor-pointer items-start gap-3 rounded-2xl bg-light-green/65 p-4 text-sm leading-6 text-ink">
+                <input id="contactConsent" name="contactConsent" type="checkbox" required aria-invalid={Boolean(errors.contactConsent)} aria-describedby={errors.contactConsent ? "contactConsent-error" : undefined} onChange={() => clearFieldError("contactConsent")} className="mt-1 h-4 w-4 shrink-0 accent-primary" />
+                <span>Email me the requested toolkit and allow Ashutosh Trade to contact me about my audit and relevant facility-supply needs.</span>
+              </label>
+              <ErrorMessage id="contactConsent-error">{errors.contactConsent}</ErrorMessage>
+            </div>
 
-          <div className="mt-6">
-            <label htmlFor="message" className="text-sm font-bold text-ink">
-              Anything You Want to Say
-              <span className="ml-1 font-normal text-muted">(optional)</span>
-            </label>
-            <textarea
-              id="message"
-              name="message"
-              rows={4}
-              placeholder="Tell us anything useful before the call"
-              className={`${inputClasses} resize-y`}
-            />
-          </div>
+            <div data-ff-el="error" role="alert" className="mt-6 empty:hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800" />
 
-          {submitError ? (
-            <p
-              role="alert"
-              className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800"
-            >
-              {submitError}
+            <button type="submit" data-ff-el="submit" disabled={isSubmitting} aria-busy={isSubmitting} className="mt-7 min-h-14 w-full rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0">
+              {isSubmitting ? "Emailing your toolkit…" : CTA_TEXT}
+            </button>
+            <p className="mt-4 text-center text-sm text-muted">
+              Practical guidance only. No spam. Unsubscribe from follow-up at any time.
             </p>
-          ) : null}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            aria-busy={isSubmitting}
-            className="mt-7 min-h-14 w-full rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0"
-          >
-            {isSubmitting ? "Sending…" : CTA_TEXT}
-          </button>
-          <p className="mt-4 text-center text-sm text-muted">
-            We respect your privacy. No spam.
-          </p>
+          </div>
+          <div data-ff-el="success" className="sr-only" aria-live="polite">
+            Your details were sent successfully. Redirecting…
+          </div>
         </form>
       </div>
     </section>
