@@ -60,18 +60,15 @@ export default function Hero() {
           <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-primary">
             Free guide for facility decision-makers
           </p>
-          <h1 id="hero-heading" className="mt-5 max-w-3xl text-balance text-[2.65rem] font-extrabold leading-[1.04] tracking-[-0.048em] text-ink sm:text-6xl lg:text-[4.25rem]">
-            <span className="block">Too Many Suppliers?</span>
-            <span className="block">Get Down to One.</span>
+          <h1 id="hero-heading" className="mt-5 max-w-3xl text-balance text-[clamp(1.65rem,8.5vw,4.25rem)] font-extrabold leading-[1.04] tracking-[-0.048em] text-ink">
+            <span className="block whitespace-nowrap text-[#4f4f4f]">Too Many Suppliers?</span>
+            <span className="block whitespace-nowrap text-[#2e795a]">Get Down to One.</span>
             <span className="mt-4 block text-[0.52em] leading-[1.15] tracking-[-0.035em] text-deep-green sm:mt-5">
               Find the hidden gaps in your facility supplies and cleaning operations.
             </span>
           </h1>
-          <p className="mt-7 max-w-2xl text-pretty text-lg leading-8 text-ink sm:text-xl">
-            Free one-to-one check for you. See how to consolidate your housekeeping and facility supplies under one supplier.{" "}
-            <strong className="font-semibold">
-              Run a practical 30-point audit covering procurement, inventory, product control, cleaning machinery, training, and continuity.
-            </strong>
+          <p className="mt-7 max-w-2xl text-pretty text-lg font-semibold leading-8 text-ink sm:text-xl">
+            Free one-to-one check for you. See how to consolidate your housekeeping and facility supplies under one supplier. Run a practical 30-point audit covering procurement, inventory, product control, cleaning machinery, training, and continuity.
           </p>
           <p className="mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg sm:leading-8">
             Sourcing Paper goods, Cleaning supplies, Housekeeping machinery, and Core facility essentials from multiple vendors creates unnecessary hassle. Evaluate products at your own pace, compare competitive pricing side-by-side, and select the right solutions for your operations. Built for hospitals, schools, hotels, commercial buildings, and offices. Complete it in about 15 minutes and leave with a focused 30-day action plan.
