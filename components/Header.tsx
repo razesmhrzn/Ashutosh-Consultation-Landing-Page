@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Header() {
   return (
     <>
-      <header className="fixed inset-x-0 top-0 z-50">
+      <header className="fixed inset-x-0 top-0 z-50 border-b border-deep-green/10 bg-white shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-5 px-5 py-4 sm:px-8 sm:py-5">
           <Image
             src="/logo.png"
