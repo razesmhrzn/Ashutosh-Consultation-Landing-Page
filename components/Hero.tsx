@@ -54,7 +54,6 @@ function ToolkitCover() {
 export default function Hero() {
   return (
     <section aria-labelledby="hero-heading" className="relative isolate overflow-hidden px-5 pb-20 pt-14 sm:px-8 sm:pb-24 sm:pt-20 lg:pb-28 lg:pt-24">
-      <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 mx-auto h-[680px] max-w-6xl bg-[radial-gradient(circle_at_22%_20%,rgba(42,122,90,0.14),transparent_56%)]" />
       <div className="hero-enter mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:gap-16">
         <div>
           <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-primary">
