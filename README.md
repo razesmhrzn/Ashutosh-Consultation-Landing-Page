@@ -4,7 +4,7 @@ A mobile-first lead-generation funnel built with Next.js App Router, TypeScript,
 
 ## Lead flow
 
-1. A prospect submits their name, work email, organization, facility type, optional WhatsApp number, and primary challenge.
+1. A prospect submits their name, work email, organization, facility type, WhatsApp number, and primary challenge.
 2. The server validates and rate-limits the request.
 3. Resend emails the audit toolkit to the prospect.
 4. Resend emails the captured lead details to the configured Ashutosh Trade inbox.

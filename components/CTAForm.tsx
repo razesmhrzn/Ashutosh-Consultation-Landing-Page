@@ -55,8 +55,10 @@ function validate(data: LeadFormData): FieldErrors {
   if (!data.facilityType) {
     errors.facilityType = "Please select your facility type.";
   }
-  if (data.whatsapp && !whatsappPattern.test(data.whatsapp)) {
-    errors.whatsapp = "Enter a valid number or leave it blank.";
+  if (!data.whatsapp) {
+    errors.whatsapp = "Please enter your WhatsApp number.";
+  } else if (!whatsappPattern.test(data.whatsapp)) {
+    errors.whatsapp = "Please enter a valid WhatsApp number.";
   }
   if (!data.contactConsent) {
     errors.contactConsent = "Please confirm we may email your requested guide.";
@@ -153,7 +155,7 @@ export default function CTAForm() {
     const flodeskValues = {
       firstName,
       lastName,
-      whatsapp: data.whatsapp || "Not provided",
+      whatsapp: data.whatsapp,
       organization: data.organization,
       website: [data.facilityType, data.challenge].filter(Boolean).join(" | "),
     };
@@ -220,7 +222,7 @@ export default function CTAForm() {
             <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
               <input name="firstName" type="hidden" data-flodesk-field="firstName" required />
               <input name="lastName" type="hidden" data-flodesk-field="lastName" />
-              <input id={`ff-${FLODESK_FORM_ID}-d2B9oAeIe4`} name="fields." type="hidden" data-flodesk-field="whatsapp" />
+              <input id={`ff-${FLODESK_FORM_ID}-d2B9oAeIe4`} name="fields." type="hidden" data-flodesk-field="whatsapp" required />
               <input id={`ff-${FLODESK_FORM_ID}-vC7XLmjEi0`} name="fields." type="hidden" data-flodesk-field="organization" required />
               <input id={`ff-${FLODESK_FORM_ID}-i0tMxyJaGD`} name="fields." type="hidden" data-flodesk-field="website" required />
               <input name="confirm_email_address" type="text" tabIndex={-1} autoComplete="off" />
@@ -264,9 +266,9 @@ export default function CTAForm() {
 
             <div>
               <label htmlFor="whatsapp" className="text-sm font-bold text-ink">
-                WhatsApp <span className="ml-1 font-normal text-muted">(optional)</span>
+                WhatsApp <span aria-hidden="true">*</span>
               </label>
-              <input id="whatsapp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" placeholder="+977 98XXXXXXXX" aria-invalid={Boolean(errors.whatsapp)} aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined} onChange={() => clearFieldError("whatsapp")} className={inputClasses} />
+              <input id="whatsapp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" required placeholder="+977 98XXXXXXXX" aria-invalid={Boolean(errors.whatsapp)} aria-describedby={errors.whatsapp ? "whatsapp-error" : undefined} onChange={() => clearFieldError("whatsapp")} className={inputClasses} />
               <ErrorMessage id="whatsapp-error">{errors.whatsapp}</ErrorMessage>
             </div>
 

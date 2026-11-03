@@ -89,8 +89,9 @@ function validatePayload(value: unknown):
 
   if (data.fullName.length < 2) return { error: "Please enter your full name." };
   if (!emailPattern.test(data.email)) return { error: "Please enter a valid work email." };
-  if (data.whatsapp && !whatsappPattern.test(data.whatsapp)) {
-    return { error: "Please enter a valid WhatsApp number or leave it blank." };
+  if (!data.whatsapp) return { error: "Please enter your WhatsApp number." };
+  if (!whatsappPattern.test(data.whatsapp)) {
+    return { error: "Please enter a valid WhatsApp number." };
   }
   if (data.organization.length < 2) return { error: "Please enter your organization." };
   if (!FACILITY_TYPES.includes(data.facilityType as (typeof FACILITY_TYPES)[number])) {
