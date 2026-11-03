@@ -7,16 +7,6 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const guidePath = "/downloads/facility-supplies-audit-toolkit.pdf";
-
-function DownloadIcon() {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" className="h-6 w-6">
-      <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
 function WhatsAppIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6">
@@ -28,11 +18,11 @@ function WhatsAppIcon() {
 export default function ThankYouPage() {
   return (
     <>
-      <Header />
+      <Header logoOnly />
       <main className="relative isolate min-h-[calc(100vh-94px)] overflow-hidden px-5 py-14 sm:px-8 sm:py-20">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 mx-auto h-[600px] max-w-5xl bg-[radial-gradient(circle_at_50%_10%,rgba(42,122,90,0.17),transparent_65%)]" />
         <section aria-labelledby="thank-you-heading" className="mx-auto max-w-3xl text-center">
-          <h1 id="thank-you-heading" className="text-balance text-[2.5rem] font-extrabold leading-[1.08] tracking-[-0.045em] text-ink sm:text-6xl">
+          <h1 id="thank-you-heading" className="text-balance text-[2.5rem] font-extrabold leading-[1.08] tracking-[-0.045em] text-[#2e795a] sm:text-6xl">
             Thank You!
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-xl font-semibold leading-8 text-deep-green sm:text-2xl">
@@ -50,31 +40,13 @@ export default function ThankYouPage() {
             />
           </div>
 
-          <div className="mt-12 rounded-[2rem] border border-deep-green/10 bg-white p-7 text-left shadow-soft sm:p-9">
-            <h2 className="text-2xl font-bold tracking-[-0.03em] text-deep-green">Get useful results in 15 minutes</h2>
-            <ol className="mt-6 space-y-5" role="list">
-              {["Complete the 30 YES/NO questions with someone who orders supplies and someone who uses them.", "Circle the three NO answers creating the greatest cost, stock, service, or machinery risk.", "Assign an owner and deadline in the included 30-day improvement plan."].map((step, index) => (
-                <li key={step} className="flex gap-4 text-base leading-7 text-ink">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-light-green text-sm font-extrabold text-deep-green">{index + 1}</span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-          </div>
-
           <p className="mt-10 text-base leading-7 text-muted">Want a free one-to-one review of your results and supply needs?</p>
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="mx-auto mt-5 inline-flex min-h-14 w-full max-w-sm items-center justify-center gap-3 rounded-full bg-whatsapp px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-[#188C47] hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-whatsapp/30 sm:w-auto sm:px-8">
             <WhatsAppIcon />
             Discuss my audit results
           </a>
-
-          <p className="mx-auto mt-12 max-w-2xl text-pretty text-lg leading-8 text-muted">
-            We emailed the download link. If it does not arrive within a few minutes, check your spam or promotions folder. You can also download a backup copy below.
-          </p>
-
-          <a href={guidePath} download className="mx-auto mt-7 inline-flex min-h-14 w-full max-w-md items-center justify-center gap-3 rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 sm:w-auto sm:px-8">
-            <DownloadIcon />
-            Download the audit toolkit
+          <a href="tel:+9779715556165" className="mx-auto mt-4 block w-fit text-lg font-bold text-deep-green transition hover:text-primary focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30">
+            +977 9715556165
           </a>
         </section>
       </main>
