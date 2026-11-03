@@ -66,10 +66,10 @@ export default function Hero() {
               Find the hidden gaps in your facility supplies and cleaning operations.
             </span>
           </h1>
-          <p className="mt-7 max-w-2xl text-pretty text-lg font-semibold leading-8 text-ink sm:text-xl">
+          <p className="mt-7 max-w-2xl text-pretty text-[19.333px] font-semibold leading-8 text-ink sm:text-[21.333px]">
             Free one-to-one check for you. See how to consolidate your housekeeping and facility supplies under one supplier. Run a practical 30-point audit covering procurement, inventory, product control, cleaning machinery, training, and continuity.
           </p>
-          <p className="mt-5 max-w-2xl text-base leading-7 text-muted sm:text-lg sm:leading-8">
+          <p className="mt-5 max-w-2xl text-[14.667px] leading-7 text-black sm:text-[16.667px] sm:leading-8">
             Sourcing Paper goods, Cleaning supplies, Housekeeping machinery, and Core facility essentials from multiple vendors creates unnecessary hassle. Evaluate products at your own pace, compare competitive pricing side-by-side, and select the right solutions for your operations. Built for hospitals, schools, hotels, commercial buildings, and offices. Complete it in about 15 minutes and leave with a focused 30-day action plan.
           </p>
           <div className="mt-7 flex flex-wrap gap-2.5 text-sm font-bold text-deep-green">
