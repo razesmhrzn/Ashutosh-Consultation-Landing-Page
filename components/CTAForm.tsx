@@ -12,7 +12,7 @@ const FLODESK_FORM_ID = "6ae9e8069e9d389e0d93fa2b";
 const FLODESK_FORM_CLASS = `ff-${FLODESK_FORM_ID}`;
 const FLODESK_FORM_ACTION = `https://form.flodesk.com/forms/${FLODESK_FORM_ID}/submit`;
 const FLODESK_CONFIG =
-  "eyJ0cmlnZ2VyIjp7Im1vZGUiOiJpbW1lZGlhdGVseSIsInZhbHVlIjowfSwib25TdWNjZXNzIjp7Im1vZGUiOiJyZWRpcmVjdCIsIm1lc3NhZ2UiOiIiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vYnV5LmFzaHV0b3NodHJhZGUuY29tLm5wL3RoYW5rLXlvdSJ9LCJjb2kiOnRydWUsInNob3dGb3JSZXR1cm5WaXNpdG9ycyI6dHJ1ZSwibm90aWZpY2F0aW9uIjp0cnVlLCJnZHByIjp7ImFjY2VwdHNNYXJrZXRpbmciOmZhbHNlLCJwcml2YWN5UG9saWN5Ijp7ImVuYWJsZWQiOmZhbHNlLCJtYW5kYXRvcnkiOmZhbHNlfX0sInRyYWNraW5nQ29uZmlnIjp7Im1ldGFQaXhlbElkIjoiIiwiY29va2llQmFubmVyRW5hYmxlZCI6ZmFsc2UsImdvb2dsZUFuYWx5dGljc0lkIjoiIn19";
+  "eyJ0cmlnZ2VyIjp7Im1vZGUiOiJpbW1lZGlhdGVseSIsInZhbHVlIjowfSwib25TdWNjZXNzIjp7Im1vZGUiOiJyZWRpcmVjdCIsIm1lc3NhZ2UiOiIiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vYnV5LmFzaHV0b3NodHJhZGUuY29tLm5wL3RoYW5rLXlvdSJ9LCJjb2kiOmZhbHNlLCJzaG93Rm9yUmV0dXJuVmlzaXRvcnMiOnRydWUsIm5vdGlmaWNhdGlvbiI6ZmFsc2UsImdkcHIiOnsiYWNjZXB0c01hcmtldGluZyI6ZmFsc2UsInByaXZhY3lQb2xpY3kiOnsiZW5hYmxlZCI6ZmFsc2UsIm1hbmRhdG9yeSI6ZmFsc2V9fSwidHJhY2tpbmdDb25maWciOnsibWV0YVBpeGVsSWQiOiIiLCJjb29raWVCYW5uZXJFbmFibGVkIjpmYWxzZSwiZ29vZ2xlQW5hbHl0aWNzSWQiOiIifX0=";
 
 declare global {
   interface Window {
@@ -224,7 +224,7 @@ export default function CTAForm() {
               <input name="lastName" type="hidden" data-flodesk-field="lastName" />
               <input id={`ff-${FLODESK_FORM_ID}-d2B9oAeIe4`} name="fields." type="hidden" data-flodesk-field="whatsapp" required />
               <input id={`ff-${FLODESK_FORM_ID}-vC7XLmjEi0`} name="fields." type="hidden" data-flodesk-field="organization" required />
-              <input id={`ff-${FLODESK_FORM_ID}-i0tMxyJaGD`} name="fields." type="hidden" data-flodesk-field="website" required />
+              <input id={`ff-${FLODESK_FORM_ID}-i0tMxyJaGD`} name="fields." type="hidden" data-flodesk-field="website" />
               <input name="confirm_email_address" type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
