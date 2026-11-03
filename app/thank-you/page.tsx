@@ -32,18 +32,23 @@ export default function ThankYouPage() {
       <main className="relative isolate min-h-[calc(100vh-94px)] overflow-hidden px-5 py-14 sm:px-8 sm:py-20">
         <div aria-hidden="true" className="absolute inset-x-0 top-0 -z-10 mx-auto h-[600px] max-w-5xl bg-[radial-gradient(circle_at_50%_10%,rgba(42,122,90,0.17),transparent_65%)]" />
         <section aria-labelledby="thank-you-heading" className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-extrabold uppercase tracking-[0.18em] text-primary">Check your inbox</p>
-          <h1 id="thank-you-heading" className="mt-4 text-balance text-[2.5rem] font-extrabold leading-[1.08] tracking-[-0.045em] text-ink sm:text-6xl">
-            Your facility audit toolkit is on its way.
+          <h1 id="thank-you-heading" className="text-balance text-[2.5rem] font-extrabold leading-[1.08] tracking-[-0.045em] text-ink sm:text-6xl">
+            Thank You!
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-8 text-muted">
-            We emailed the download link. If it does not arrive within a few minutes, check your spam or promotions folder. You can also download a backup copy below.
+          <p className="mx-auto mt-5 max-w-2xl text-pretty text-xl font-semibold leading-8 text-deep-green sm:text-2xl">
+            Check your inbox, your facility audit toolkit is on its way.
           </p>
 
-          <a href={guidePath} download className="mx-auto mt-9 inline-flex min-h-14 w-full max-w-md items-center justify-center gap-3 rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 sm:w-auto sm:px-8">
-            <DownloadIcon />
-            Download the audit toolkit
-          </a>
+          <div className="mt-10 overflow-hidden rounded-[2rem] border border-deep-green/10 bg-black shadow-panel">
+            <iframe
+              className="aspect-video w-full"
+              src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE?rel=0"
+              title="Facility audit introduction video"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+            />
+          </div>
 
           <div className="mt-12 rounded-[2rem] border border-deep-green/10 bg-white p-7 text-left shadow-soft sm:p-9">
             <h2 className="text-2xl font-bold tracking-[-0.03em] text-deep-green">Get useful results in 15 minutes</h2>
@@ -61,6 +66,15 @@ export default function ThankYouPage() {
           <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="mx-auto mt-5 inline-flex min-h-14 w-full max-w-sm items-center justify-center gap-3 rounded-full bg-whatsapp px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-[#188C47] hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-whatsapp/30 sm:w-auto sm:px-8">
             <WhatsAppIcon />
             Discuss my audit results
+          </a>
+
+          <p className="mx-auto mt-12 max-w-2xl text-pretty text-lg leading-8 text-muted">
+            We emailed the download link. If it does not arrive within a few minutes, check your spam or promotions folder. You can also download a backup copy below.
+          </p>
+
+          <a href={guidePath} download className="mx-auto mt-7 inline-flex min-h-14 w-full max-w-md items-center justify-center gap-3 rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 sm:w-auto sm:px-8">
+            <DownloadIcon />
+            Download the audit toolkit
           </a>
         </section>
       </main>
