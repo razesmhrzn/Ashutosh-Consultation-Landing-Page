@@ -64,6 +64,7 @@ export async function addFlodeskSubscriber(
     headers: { "Content-Type": "application/json;charset=UTF-8" },
     body: JSON.stringify({
       firstName: data.fullName,
+      lastName: "",
       email: data.email,
       "fields.whatsappNumber": data.whatsapp,
       "fields.organization": data.organization,
