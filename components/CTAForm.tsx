@@ -1,28 +1,14 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
 import { CTA_TEXT } from "@/lib/config";
 import {
   FACILITY_CHALLENGES,
   FACILITY_TYPES,
   type LeadFormData,
 } from "@/lib/lead";
-
-const FLODESK_FORM_ID = "6ae9e8069e9d389e0d93fa2b";
-const FLODESK_FORM_CLASS = `ff-${FLODESK_FORM_ID}`;
-const FLODESK_FORM_ACTION = `https://form.flodesk.com/forms/${FLODESK_FORM_ID}/submit`;
-const FLODESK_CONFIG =
-  "eyJ0cmlnZ2VyIjp7Im1vZGUiOiJpbW1lZGlhdGVseSIsInZhbHVlIjowfSwib25TdWNjZXNzIjp7Im1vZGUiOiJyZWRpcmVjdCIsIm1lc3NhZ2UiOiIiLCJyZWRpcmVjdFVybCI6Imh0dHBzOi8vYnV5LmFzaHV0b3NodHJhZGUuY29tLm5wL3RoYW5rLXlvdSJ9LCJjb2kiOmZhbHNlLCJzaG93Rm9yUmV0dXJuVmlzaXRvcnMiOnRydWUsIm5vdGlmaWNhdGlvbiI6ZmFsc2UsImdkcHIiOnsiYWNjZXB0c01hcmtldGluZyI6ZmFsc2UsInByaXZhY3lQb2xpY3kiOnsiZW5hYmxlZCI6ZmFsc2UsIm1hbmRhdG9yeSI6ZmFsc2V9fSwidHJhY2tpbmdDb25maWciOnsibWV0YVBpeGVsSWQiOiIiLCJjb29raWVCYW5uZXJFbmFibGVkIjpmYWxzZSwiZ29vZ2xlQW5hbHl0aWNzSWQiOiIifX0=";
-
-declare global {
-  interface Window {
-    FlodeskObject?: string;
-    fd?: ((
-      command: "form:handle",
-      options: { formId: string; rootEl: string },
-    ) => void) & { q?: unknown[][] };
-  }
-}
+import { submitLead } from "@/lib/submit";
+import type { FlodeskVerification } from "@/lib/flodesk";
 
 type FieldName = Exclude<keyof LeadFormData, "companyWebsite">;
 type FieldErrors = Partial<Record<FieldName, string>>;
@@ -82,41 +68,20 @@ const inputClasses =
 
 export default function CTAForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
-
-  useEffect(() => {
-    if (!window.fd) {
-      const queuedFlodesk = ((...args: unknown[]) => {
-        queuedFlodesk.q = queuedFlodesk.q || [];
-        queuedFlodesk.q.push(args);
-      }) as NonNullable<Window["fd"]>;
-      const cacheVersion = Math.floor(Date.now() / (120 * 1000)) * 60;
-      const moduleScript = document.createElement("script");
-      const legacyScript = document.createElement("script");
-
-      window.FlodeskObject = "fd";
-      window.fd = queuedFlodesk;
-
-      moduleScript.async = true;
-      moduleScript.type = "module";
-      moduleScript.src = `https://assets.flodesk.com/universal.mjs?v=${cacheVersion}`;
-      legacyScript.async = true;
-      legacyScript.noModule = true;
-      legacyScript.src = `https://assets.flodesk.com/universal.js?v=${cacheVersion}`;
-      document.head.append(moduleScript, legacyScript);
-    }
-
-    window.fd?.("form:handle", {
-      formId: FLODESK_FORM_ID,
-      rootEl: `.${FLODESK_FORM_CLASS}`,
-    });
-  }, []);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [verification, setVerification] = useState<FlodeskVerification | null>(null);
+  const [pendingData, setPendingData] = useState<LeadFormData | null>(null);
 
   const clearFieldError = (field: FieldName) => {
     if (!errors[field]) return;
     setErrors((current) => ({ ...current, [field]: undefined }));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isSubmitting) return;
+
     const form = new FormData(event.currentTarget);
     const data: LeadFormData = {
       fullName: String(form.get("fullName") ?? "").trim(),
@@ -134,47 +99,55 @@ export default function CTAForm() {
     setErrors(nextErrors);
 
     if (firstInvalidField) {
-      event.preventDefault();
-      event.stopPropagation();
       requestAnimationFrame(() => {
         document.getElementById(firstInvalidField)?.focus();
       });
       return;
     }
 
-    const nameParts = data.fullName.split(/\s+/).filter(Boolean);
-    const firstName = nameParts.shift() ?? data.fullName;
-    const lastName = nameParts.join(" ");
-    const flodeskValues = {
-      firstName,
-      lastName,
-      whatsapp: data.whatsapp,
-      organization: data.organization,
-      website: [data.facilityType, data.challenge].filter(Boolean).join(" | "),
-    };
-
-    Object.entries(flodeskValues).forEach(([field, value]) => {
-      const input = event.currentTarget.querySelector<HTMLInputElement>(
-        `[data-flodesk-field="${field}"]`,
+    setIsSubmitting(true);
+    setSubmitError("");
+    try {
+      const result = await submitLead(data);
+      if (result.ok) {
+        window.location.assign("/thank-you");
+        return;
+      }
+      setPendingData(data);
+      setVerification(result.verification);
+      setIsSubmitting(false);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "We couldn’t send your request. Please try again.",
       );
+      setIsSubmitting(false);
+    }
+  };
 
-      if (input) input.value = value;
-    });
-
+  const completeVerification = async () => {
+    if (!pendingData || !verification || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError("");
+    try {
+      const result = await submitLead(pendingData, verification);
+      if (!result.ok) throw new Error("Please retry the security check.");
+      window.location.assign("/thank-you");
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : "The security check failed. Please try again.",
+      );
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section
       id="get-toolkit"
       aria-labelledby="form-heading"
-      className={`${FLODESK_FORM_CLASS} scroll-mt-6 px-5 py-16 sm:px-8 sm:py-24`}
-      data-ff-el="root"
-      data-ff-version="3"
-      data-ff-type="inline"
-      data-ff-name="inlineNoImage"
-      data-ff-stage="default"
+      className="scroll-mt-6 px-5 py-16 sm:px-8 sm:py-24"
     >
-      <div data-ff-el="config" data-ff-config={FLODESK_CONFIG} hidden />
       <div className="mx-auto grid max-w-5xl overflow-hidden rounded-[2rem] border border-deep-green/10 bg-white shadow-panel sm:rounded-[2.5rem] lg:grid-cols-[0.82fr_1.18fr]">
         <div className="relative overflow-hidden bg-deep-green px-6 py-10 text-white sm:px-10 sm:py-12 lg:px-12 lg:py-14">
           <div
@@ -204,20 +177,25 @@ export default function CTAForm() {
 
         <form
           noValidate
-          action={FLODESK_FORM_ACTION}
-          method="post"
-          data-ff-el="form"
-          onSubmitCapture={handleSubmit}
+          onSubmit={handleSubmit}
           className="min-w-0 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12"
         >
-          <div data-ff-el="content" className="fd-form-content">
+          <div>
+            {verification ? (
+              <div className="flex min-h-[30rem] flex-col items-center justify-center text-center">
+                <p className="text-sm font-extrabold uppercase tracking-[0.16em] text-primary">One final step</p>
+                <h3 className="mt-3 text-2xl font-bold text-ink">Confirm you are not a robot</h3>
+                <p className="mt-3 max-w-md text-base leading-7 text-muted">Flodesk requires this quick security check before adding your details.</p>
+                {submitError ? <div role="alert" className="mt-5 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800">{submitError}</div> : null}
+                <button type="button" onClick={completeVerification} disabled={isSubmitting} className="mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-base font-bold text-white shadow-button transition hover:bg-deep-green disabled:cursor-wait disabled:opacity-75">
+                  {isSubmitting ? "Verifying…" : "I am not a robot — continue"}
+                </button>
+              </div>
+            ) : (
+              <>
             <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-              <input name="firstName" type="hidden" data-flodesk-field="firstName" required />
-              <input name="lastName" type="hidden" data-flodesk-field="lastName" />
-              <input id={`ff-${FLODESK_FORM_ID}-d2B9oAeIe4`} name="fields." type="hidden" data-flodesk-field="whatsapp" required />
-              <input id={`ff-${FLODESK_FORM_ID}-vC7XLmjEi0`} name="fields." type="hidden" data-flodesk-field="organization" required />
-              <input id={`ff-${FLODESK_FORM_ID}-i0tMxyJaGD`} name="fields." type="hidden" data-flodesk-field="website" />
-              <input name="confirm_email_address" type="text" tabIndex={-1} autoComplete="off" />
+              <label htmlFor="companyWebsite">Company website</label>
+              <input id="companyWebsite" name="companyWebsite" type="text" tabIndex={-1} autoComplete="off" />
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2">
@@ -283,22 +261,24 @@ export default function CTAForm() {
               <ErrorMessage id="contactConsent-error">{errors.contactConsent}</ErrorMessage>
             </div>
 
-            <div data-ff-el="error" role="alert" className="fd-form-error mt-6 empty:hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800" />
+            {submitError ? (
+              <div role="alert" className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800">
+                {submitError}
+              </div>
+            ) : null}
 
             <button
               type="submit"
-              data-ff-el="submit"
-              data-ff-tab="submit"
-              className="fd-btn mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-75 disabled:hover:translate-y-0"
+              disabled={isSubmitting}
+              className="mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-75 disabled:hover:translate-y-0"
             >
-              {CTA_TEXT}
+              {isSubmitting ? "Sending…" : CTA_TEXT}
             </button>
             <p className="mt-4 text-center text-sm text-muted">
               Practical guidance only. No spam. Unsubscribe from follow-up at any time.
             </p>
-          </div>
-          <div data-ff-el="success" className="fd-form-success sr-only" aria-live="polite">
-            Your details were sent successfully. Redirecting…
+              </>
+            )}
           </div>
         </form>
       </div>

@@ -1,8 +1,12 @@
 import type { LeadFormData } from "@/lib/lead";
+import type { FlodeskVerification } from "@/lib/flodesk";
 
 export type { LeadFormData } from "@/lib/lead";
 
-export async function submitLead(data: LeadFormData): Promise<void> {
+export async function submitLead(
+  data: LeadFormData,
+  verification?: FlodeskVerification,
+): Promise<{ ok: true } | { ok: false; verification: FlodeskVerification }> {
   let response: Response;
 
   try {
@@ -11,7 +15,7 @@ export async function submitLead(data: LeadFormData): Promise<void> {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: JSON.stringify({ ...data, verification }),
     });
   } catch {
     throw new Error(
@@ -28,4 +32,8 @@ export async function submitLead(data: LeadFormData): Promise<void> {
         "We couldn’t email the toolkit right now. Please try again in a moment.",
     );
   }
+
+  return (await response.json()) as
+    | { ok: true }
+    | { ok: false; verification: FlodeskVerification };
 }

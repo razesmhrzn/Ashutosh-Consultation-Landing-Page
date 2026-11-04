@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { sendLeadMagnetEmails } from "@/lib/email";
+import { addFlodeskSubscriber, type FlodeskVerification } from "@/lib/flodesk";
 import {
   FACILITY_CHALLENGES,
   FACILITY_TYPES,
@@ -146,14 +146,23 @@ export async function POST(request: Request) {
   }
 
   try {
-    await sendLeadMagnetEmails(result.data, request.url);
-    return NextResponse.json({ ok: true });
+    const body = payload as Record<string, unknown>;
+    const rawVerification = body.verification;
+    let verification: FlodeskVerification | undefined;
+    if (rawVerification && typeof rawVerification === "object") {
+      const candidate = rawVerification as Record<string, unknown>;
+      if (typeof candidate.url === "string" && typeof candidate.fieldName === "string") {
+        verification = { url: candidate.url, fieldName: candidate.fieldName };
+      }
+    }
+    const flodeskResult = await addFlodeskSubscriber(result.data, verification);
+    return NextResponse.json(flodeskResult);
   } catch (error) {
-    console.error("Lead magnet email delivery failed", error);
+    console.error("Flodesk lead capture failed", error);
     return NextResponse.json(
       {
         error:
-          "We could not email the toolkit right now. Please try again in a moment.",
+          "We could not submit your details right now. Please try again in a moment.",
       },
       { status: 503 },
     );
