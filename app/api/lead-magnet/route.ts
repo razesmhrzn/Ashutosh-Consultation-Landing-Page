@@ -11,19 +11,6 @@ export const maxDuration = 15;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const whatsappPattern = /^\+?[0-9 ()-]{7,22}$/;
-const rateLimitWindowMs = 10 * 60 * 1000;
-const maxRequestsPerWindow = 5;
-
-type RateLimitEntry = { count: number; resetAt: number };
-
-const globalForLeadRateLimit = globalThis as typeof globalThis & {
-  leadRateLimit?: Map<string, RateLimitEntry>;
-};
-
-const leadRateLimit =
-  globalForLeadRateLimit.leadRateLimit ?? new Map<string, RateLimitEntry>();
-
-globalForLeadRateLimit.leadRateLimit = leadRateLimit;
 
 function text(value: unknown, maxLength: number): string {
   return typeof value === "string" ? value.trim().slice(0, maxLength) : "";
@@ -40,28 +27,6 @@ function isSameOrigin(request: Request): boolean {
   } catch {
     return false;
   }
-}
-
-function clientKey(request: Request): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip") ||
-    "unknown"
-  );
-}
-
-function isRateLimited(request: Request): boolean {
-  const now = Date.now();
-  const key = clientKey(request);
-  const current = leadRateLimit.get(key);
-
-  if (!current || current.resetAt <= now) {
-    leadRateLimit.set(key, { count: 1, resetAt: now + rateLimitWindowMs });
-    return false;
-  }
-
-  current.count += 1;
-  return current.count > maxRequestsPerWindow;
 }
 
 function validatePayload(value: unknown):
@@ -146,15 +111,6 @@ export async function POST(request: Request) {
     if (typeof candidate.url === "string" && typeof candidate.fieldName === "string") {
       verification = { url: candidate.url, fieldName: candidate.fieldName };
     }
-  }
-
-  // A Flodesk submission is a two-step flow. Limit only the initial attempt;
-  // the required security verification must not consume another rate-limit slot.
-  if (!verification && isRateLimited(request)) {
-    return NextResponse.json(
-      { error: "Too many requests. Please wait a few minutes and try again." },
-      { status: 429 },
-    );
   }
 
   try {
