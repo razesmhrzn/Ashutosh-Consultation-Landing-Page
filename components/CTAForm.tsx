@@ -91,7 +91,7 @@ export default function CTAForm() {
       facilityType: String(form.get("facilityType") ?? "").trim() as LeadFormData["facilityType"],
       challenge: String(form.get("challenge") ?? "").trim() as LeadFormData["challenge"],
       contactConsent: form.get("contactConsent") === "on",
-      companyWebsite: String(form.get("companyWebsite") ?? "").trim(),
+      companyWebsite: "",
     };
     const nextErrors = validate(data);
     const firstInvalidField = fieldOrder.find((field) => nextErrors[field]);
@@ -193,11 +193,6 @@ export default function CTAForm() {
               </div>
             ) : (
               <>
-            <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
-              <label htmlFor="companyWebsite">Company website</label>
-              <input id="companyWebsite" name="companyWebsite" type="text" tabIndex={-1} autoComplete="off" />
-            </div>
-
             <div className="grid gap-6 sm:grid-cols-2">
             <div>
               <label htmlFor="fullName" className="text-sm font-bold text-ink">
