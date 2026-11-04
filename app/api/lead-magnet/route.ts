@@ -122,13 +122,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Request is too large." }, { status: 413 });
   }
 
-  if (isRateLimited(request)) {
-    return NextResponse.json(
-      { error: "Too many requests. Please wait a few minutes and try again." },
-      { status: 429 },
-    );
-  }
-
   let payload: unknown;
   try {
     payload = await request.json();
@@ -145,16 +138,26 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  try {
-    const body = payload as Record<string, unknown>;
-    const rawVerification = body.verification;
-    let verification: FlodeskVerification | undefined;
-    if (rawVerification && typeof rawVerification === "object") {
-      const candidate = rawVerification as Record<string, unknown>;
-      if (typeof candidate.url === "string" && typeof candidate.fieldName === "string") {
-        verification = { url: candidate.url, fieldName: candidate.fieldName };
-      }
+  const body = payload as Record<string, unknown>;
+  const rawVerification = body.verification;
+  let verification: FlodeskVerification | undefined;
+  if (rawVerification && typeof rawVerification === "object") {
+    const candidate = rawVerification as Record<string, unknown>;
+    if (typeof candidate.url === "string" && typeof candidate.fieldName === "string") {
+      verification = { url: candidate.url, fieldName: candidate.fieldName };
     }
+  }
+
+  // A Flodesk submission is a two-step flow. Limit only the initial attempt;
+  // the required security verification must not consume another rate-limit slot.
+  if (!verification && isRateLimited(request)) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a few minutes and try again." },
+      { status: 429 },
+    );
+  }
+
+  try {
     const flodeskResult = await addFlodeskSubscriber(result.data, verification);
     return NextResponse.json(flodeskResult);
   } catch (error) {
