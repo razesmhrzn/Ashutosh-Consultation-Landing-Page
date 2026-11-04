@@ -293,9 +293,15 @@ export default function CTAForm() {
 
             <div data-ff-el="error" role="alert" className="mt-6 empty:hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800" />
 
-            <a href="https://buy.ashutoshtrade.com.np/thank-you" className="mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30">
-              {CTA_TEXT}
-            </a>
+            <button
+              type="submit"
+              data-ff-el="submit"
+              data-ff-tab="submit"
+              disabled={isSubmitting}
+              className="mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-75 disabled:hover:translate-y-0"
+            >
+              {isSubmitting ? "Sending…" : CTA_TEXT}
+            </button>
             <p className="mt-4 text-center text-sm text-muted">
               Practical guidance only. No spam. Unsubscribe from follow-up at any time.
             </p>
