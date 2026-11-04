@@ -59,21 +59,16 @@ export async function addFlodeskSubscriber(
     return { ok: true };
   }
 
-  const nameParts = data.fullName.split(/\s+/).filter(Boolean);
-  const firstName = nameParts.shift() ?? data.fullName;
-  const lastName = nameParts.join(" ");
   const response = await fetch(submitUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json;charset=UTF-8" },
     body: JSON.stringify({
-      firstName,
-      lastName,
+      firstName: data.fullName,
       email: data.email,
-      "fields.": [
-        data.whatsapp,
-        data.organization,
-        [data.facilityType, data.challenge].filter(Boolean).join(" | "),
-      ],
+      "fields.d2B9oAeIe4": data.whatsapp,
+      "fields.vC7XLmjEi0": data.organization,
+      "fields.i0tMxyJaGD": data.facilityType,
+      "fields.ORZXop7IAL": data.challenge || "Not specified",
       confirm_email_address: "",
     }),
     cache: "no-store",
