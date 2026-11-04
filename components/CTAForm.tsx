@@ -82,7 +82,6 @@ const inputClasses =
 
 export default function CTAForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!window.fd) {
@@ -118,12 +117,6 @@ export default function CTAForm() {
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    if (isSubmitting) {
-      event.preventDefault();
-      event.stopPropagation();
-      return;
-    }
-
     const form = new FormData(event.currentTarget);
     const data: LeadFormData = {
       fullName: String(form.get("fullName") ?? "").trim(),
@@ -168,7 +161,6 @@ export default function CTAForm() {
       if (input) input.value = value;
     });
 
-    setIsSubmitting(true);
   };
 
   return (
@@ -218,7 +210,7 @@ export default function CTAForm() {
           onSubmitCapture={handleSubmit}
           className="min-w-0 px-5 py-8 sm:px-8 sm:py-10 lg:px-10 lg:py-12"
         >
-          <div data-ff-el="content">
+          <div data-ff-el="content" className="fd-form-content">
             <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
               <input name="firstName" type="hidden" data-flodesk-field="firstName" required />
               <input name="lastName" type="hidden" data-flodesk-field="lastName" />
@@ -291,22 +283,21 @@ export default function CTAForm() {
               <ErrorMessage id="contactConsent-error">{errors.contactConsent}</ErrorMessage>
             </div>
 
-            <div data-ff-el="error" role="alert" className="mt-6 empty:hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800" />
+            <div data-ff-el="error" role="alert" className="fd-form-error mt-6 empty:hidden rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold leading-6 text-red-800" />
 
             <button
               type="submit"
               data-ff-el="submit"
               data-ff-tab="submit"
-              disabled={isSubmitting}
-              className="mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-75 disabled:hover:translate-y-0"
+              className="fd-btn mt-7 inline-flex min-h-14 w-full items-center justify-center rounded-full bg-primary px-6 py-4 text-center text-base font-bold text-white shadow-button transition duration-200 hover:-translate-y-0.5 hover:bg-deep-green hover:shadow-lg focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-4 focus-visible:outline-primary/30 disabled:cursor-wait disabled:opacity-75 disabled:hover:translate-y-0"
             >
-              {isSubmitting ? "Sending…" : CTA_TEXT}
+              {CTA_TEXT}
             </button>
             <p className="mt-4 text-center text-sm text-muted">
               Practical guidance only. No spam. Unsubscribe from follow-up at any time.
             </p>
           </div>
-          <div data-ff-el="success" className="sr-only" aria-live="polite">
+          <div data-ff-el="success" className="fd-form-success sr-only" aria-live="polite">
             Your details were sent successfully. Redirecting…
           </div>
         </form>

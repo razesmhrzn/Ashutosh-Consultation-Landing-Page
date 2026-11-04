@@ -2,6 +2,45 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Flodesk injects a security check after some submissions. Keep that check in
+   the custom form's visible flow instead of leaving the CTA in a loading state. */
+.fd-has-captcha [data-ff-el="content"] {
+  display: flex;
+  min-height: 14rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.fd-has-captcha [data-ff-el="content"] > :not([data-ff-el="captcha"]) {
+  display: none !important;
+}
+
+.fd-has-captcha [data-ff-el="captcha"] {
+  display: flex !important;
+  width: 100%;
+  min-height: 11rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border: 1px solid rgb(46 121 90 / 20%);
+  border-radius: 1rem;
+  background: rgb(234 244 239 / 70%);
+  padding: 1.5rem;
+  color: #1f2623;
+  text-align: center;
+}
+
+.fd-has-captcha [data-ff-el="captcha"]::before {
+  content: "Please complete the quick security check to finish your request.";
+  display: block;
+  max-width: 28rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 :root {
   color-scheme: light;
 }
