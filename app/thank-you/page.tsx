@@ -32,7 +32,7 @@ export default function ThankYouPage() {
           <div className="mt-10 overflow-hidden rounded-[2rem] border border-deep-green/10 bg-black shadow-panel">
             <iframe
               className="aspect-video w-full"
-              src="https://www.youtube-nocookie.com/embed/_GuZlu0zML4?rel=0"
+              src="https://www.youtube-nocookie.com/embed/a_ixg5aktcE?rel=0"
               title="Facility audit introduction video"
               loading="lazy"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
