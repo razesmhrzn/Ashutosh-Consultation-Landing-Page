@@ -1,7 +1,7 @@
 import "server-only";
 import type { LeadFormData } from "@/lib/lead";
 
-const formId = "6ae9e8069e9d389e0d93fa2b";
+const formId = "6afc575f2272aedd4bc5a3d8";
 const submitUrl = `https://form.flodesk.com/forms/${formId}/submit`;
 
 export type FlodeskVerification = {
